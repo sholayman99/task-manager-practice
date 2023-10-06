@@ -40,5 +40,17 @@ exports.userProfileDetails = async (req,res) =>{
     res.status(400).json({message:"Failed" , data:error.toStringify()});
    }
 
-}
+};
+
+exports.updateUserProfile = async(req,res) =>{
+    try {
+        const email = req.headers["email"] ;
+        const reqBody = req.body;
+        const result = await UserModel.updateOne({email:email},reqBody);
+        res.status(200).json({message:"sucesss" , data:result});
+
+    } catch (error) {
+        res.status(400).json({message:"Failed" , data:error.toStringify()});  
+    }
+};
 
