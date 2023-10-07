@@ -72,7 +72,7 @@ exports.RecoverVerifyEmail = async(req,res) =>{
     let EmailSubject = "Task Manager Verification"
     try {
         const result = await UserModel.findOne({email: email}).count();
-        console.log(result)
+        // console.log(result)
         if(result === 1){
         
         const createOTP = await OtpModel.create({email:email,otp:OTPcode});
@@ -82,6 +82,49 @@ exports.RecoverVerifyEmail = async(req,res) =>{
         }
     } catch (error) {
         res.status(401).json({message:"Failed" , data:"Invalid Email"});
+    }
+
+};
+
+//verify by otp code 
+
+exports.RecoverVerifyOtp =async(req,res) =>{
+    const email = req.params.email ;
+    const otp = req.params.otp ;
+    const status = 0;
+    const updatedStatus = 1 ;
+    try {
+       const result = await OtpModel.find({email:email, otp:otp, status:status}).count();
+    //    console.log(result);
+       if(result>0){
+        const OTPupdate = await OtpModel.updateOne({email:email, otp:otp, status:updatedStatus});
+        res.status(200).json({message:"sucesss", data:"OTP Verified Successfully"});
+       } else{
+        res.status(400).json({message:"Failed" , data:"Invalid Code"})
+       }
+    } catch (error) {
+       res.status(400).json({message:"Failed" , data:error.toStringify()}) 
+    }
+};
+
+//reset user password
+
+exports.ResetUserPassword = async(req,res)=>{
+    const email = req.body.email ;
+    const otp = req.body.otp ;
+    const newPass = req.body.password ;
+    const updatedStatus = 1;
+    try {
+      const result = await OtpModel.find({email:email,otp:otp,status:updatedStatus}).count();
+    //   console.log(result)
+      if(result > 0){
+      await UserModel.updateOne({email:email , password:newPass});
+      res.status(200).json({message:"sucesss", data:"Password Reset Successfully"});
+      } else{
+        res.status(400).json({message:"Failed", data:"Failed to Success"});
+      }
+    } catch (error) {
+        res.status(400).json({message:"Failed", data:error.toStringify()});
     }
 
 }
