@@ -8,9 +8,7 @@ module.exports = (req,res,next) => {
             console.log(token);
             res.status(401).json({message:"UnAuthorized"});
         }else{
-            console.log(decoded)
            let email = decoded.data ;
-           console.log(email);
            req.headers.email = email ;
            next(); 
         }
